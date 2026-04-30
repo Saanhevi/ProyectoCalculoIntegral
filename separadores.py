@@ -1,4 +1,4 @@
-import identificadores 
+import identificadores as idn
 
 def calcularNumero(numero : str):
     # Primero se separaran por sumas y restas en una lista
@@ -34,7 +34,7 @@ def separarMultiplicacion(numero : str):
     for elemento in lista_numeros_operador:
         if elemento == "":
             continue
-        resultado *= identificadores.identificarNumero(elemento)
+        resultado *= idn.identificarNumero(elemento)
     
     return resultado
     

@@ -1,6 +1,11 @@
 import math 
 import separadores as sp 
 
+def calcularNumero(numero : str):
+    # Primero se separaran por sumas y restas en una lista
+    resultado = sp.separarSumaResta(numero)
+    return resultado 
+
 def identificarFuncion(funcion : str):
     lista = funcion.split()
     
@@ -52,7 +57,7 @@ def identificarCoeficiente(subfuncion : str):
     if coeficiente == "" : 
         coeficiente = 1
     else: 
-        coeficiente = sp.calcularNumero(coeficiente)
+        coeficiente = calcularNumero(coeficiente)
         
     return [coeficiente, k] # Lista con el coeficiente y con la posicion donde esta el x (indice k)
 
@@ -71,6 +76,6 @@ def identificarExponente(subfuncion : str , k : int):
     elif exponente == "" :
         exponente = 1
     else :
-        exponente = sp.calcularNumero(exponente) 
+        exponente = calcularNumero(exponente) 
     
     return exponente
