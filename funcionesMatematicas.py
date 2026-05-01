@@ -4,7 +4,7 @@ class fnMath :
     diccionarioFactorial = {}
     
     def factorial(n):
-        if n==1:
+        if n==1 or n == 0:
             return 1
         
         # Se verifica si esta en el diccionario y no realizar varias recursiones 
@@ -30,4 +30,14 @@ class fnMath :
                 resultado -= termino
                 
         return resultado
-print(fnMath.seno("pi/2 + pi"))
+
+    def euler():
+        resultado = 0
+        
+        for n in range(100): 
+            # e = 1 + 1 + 1/2! + 1/3! + 1/4!
+            resultado +=  1/(fnMath.factorial(n))
+            
+        return resultado
+    
+print(fnMath.euler())
