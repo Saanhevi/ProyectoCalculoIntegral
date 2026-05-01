@@ -1,3 +1,63 @@
+from stack import stack
+
+class arbolFuncion: 
+    def __init__ (self):
+        self.cabeza = None
+        self.listaImprimible = []
+        self.pila = stack()
+        
+         
+    class nodoArbol:
+        # Clase para crear objetos tipo Nodo, necesario para crear el arbol
+        
+        def __init__(self, valor: str):
+            self.valor = valor # Valor de ese nodo
+            self.izquierdo = None  # Apuntador al hijo izquierdo 
+            self.derecho = None    # Apuntador al hijo derecho 
+            
+    
+    def imprimirArbol(self):
+        # Se vacia la listaImprimible
+        self.listaImprimible = []
+        
+        # Se llama a la funcion que imprime cada uno de los nodos
+        self.imprimirArbolNodo(self.cabeza)
+        print(self.listaImprimible)
+        
+    def imprimirArbolNodo(self, nodo : nodoArbol):
+        # Esta forma de imprimir es in-order, por lo que los numeros estaran en orden 
+        if nodo == None: 
+            return 
+        
+        # Primeramente trae el valor izquierdo 
+        valorIzquierdo = self.imprimirArbolNodo(nodo.izquierdo)
+
+        if valorIzquierdo is not None: 
+            # Si no dio None al retornar (Hay un elemento) entonces se agrega
+            self.listaImprimible.append(valorIzquierdo)
+
+        # Se guarda el valor del nodo actual, el cual siempre tendra un elemento
+        self.listaImprimible.append(nodo.valor)
+        
+        # Luego se trae el valor del nodo derecho
+        valorDerecho = self.imprimirArbolNodo(nodo.derecho)
+        
+        if valorDerecho is not None: 
+            # Si no dio None al retornar (Hay un elemento) entonces se agrega
+            self.listaImprimible.append(valorDerecho)
+
+    def usarStack(self):
+        
+        for i in range(10):
+            self.pila.push(i)
+        
+        print(self.pila.peek())
+        print(self.pila.pop())
+        print(self.pila.pop())
+        print(self.pila.pop())
+
+
+
 class arbolBinario: 
     # Arbol para representar la funcion 
     
@@ -75,10 +135,13 @@ if __name__ == "__main__":
     
     # Casos de prueba para el arbol binario
     arbolPrueba = arbolBinario()
+    
     arbolPrueba.agregar(5)
     arbolPrueba.agregar(7)
     arbolPrueba.agregar(10)
     arbolPrueba.agregar(2)
     arbolPrueba.agregar(3)
     arbolPrueba.agregar(1)
+    
     arbolPrueba.imprimirArbol()
+    
