@@ -4,7 +4,10 @@ class arbolFuncion:
     def __init__ (self):
         self.cabeza = None
         self.listaImprimible = []
-        self.pila = stack()
+        self.listaCaracteres = ["+", "-", "*", "/", "(",")","^"]
+        self.pilaParentesis = stack()
+        self.pilaOperaciones = stack()
+    
         
          
     class nodoArbol:
@@ -21,16 +24,16 @@ class arbolFuncion:
         self.listaImprimible = []
         
         # Se llama a la funcion que imprime cada uno de los nodos
-        self.imprimirArbolNodo(self.cabeza)
+        self.imprimirArbolRecursivo(self.cabeza)
         print(self.listaImprimible)
         
-    def imprimirArbolNodo(self, nodo : nodoArbol):
+    def imprimirArbolRecursivo(self, nodo : nodoArbol):
         # Esta forma de imprimir es in-order, por lo que los numeros estaran en orden 
         if nodo == None: 
             return 
         
         # Primeramente trae el valor izquierdo 
-        valorIzquierdo = self.imprimirArbolNodo(nodo.izquierdo)
+        valorIzquierdo = self.imprimirArbolRecursivo(nodo.izquierdo)
 
         if valorIzquierdo is not None: 
             # Si no dio None al retornar (Hay un elemento) entonces se agrega
@@ -40,23 +43,67 @@ class arbolFuncion:
         self.listaImprimible.append(nodo.valor)
         
         # Luego se trae el valor del nodo derecho
-        valorDerecho = self.imprimirArbolNodo(nodo.derecho)
+        valorDerecho = self.imprimirArbolRecursivo(nodo.derecho)
         
         if valorDerecho is not None: 
             # Si no dio None al retornar (Hay un elemento) entonces se agrega
             self.listaImprimible.append(valorDerecho)
 
-    def usarStack(self):
+    def construirArbol(self, expresion : str):
+        self.cabeza = self.construirArbolRecursivo(self.cabeza, expresion)
         
-        for i in range(10):
-            self.pila.push(i)
+    def construirArbolRecursivo(self, nodo : nodoArbol, expresion : str):
+        # Primero se recorre la expresion para determinar si hay parentesis redundantes
+        self.pilaOperaciones.clear()
         
-        print(self.pila.peek())
-        print(self.pila.pop())
-        print(self.pila.pop())
-        print(self.pila.pop())
+        for caracter in expresion:
+            if caracter in self.listaCaracteres:
+                # Si el caracter esta en la lista de caracteres entonces se apila 
+                self.pilaOperaciones.push(caracter)
+        
+        print(self.pilaOperaciones.lista)# Si no esta vacio
+        if self.pilaOperaciones.peek() == ")" : 
+                # Hay que quitar los parentesis redudantes 
+                expresion = expresion[1:len(expresion)-1] 
 
+        for i in range(3):
+            # Casos i = 0 Suma/Resta, i = 1 Multiplicacion/Division, i=2 Exponente
+            self.pilaParentesis.clear()
+            palabra = ""
+            banderaSalir = False 
+             
+            if banderaSalir : # Si ya hice una particion se rompe el ciclo 
+                break
+            for j in range(len(expresion)) :
+                
+                if i == 0 : # Caso de la suma/resta
+                    caracter = expresion[j] # Caracter actual
+                    # Si es suma o resta y la pila esta vacia entonces se parte desde ahi
+                    if (caracter == "+" or caracter == "-") and self.pilaParentesis.isEmpty():
+                        # Se hace particion
+                        nodo = self.nodoArbol(caracter)
+                        nodo.izquierdo = self.construirArbolRecursivo(nodo.izquierdo, palabra)
+                        nodo.derecho = self.construirArbolRecursivo(nodo.derecho, expresion[j+1:])
+                        banderaSalir = True # Hubo particion 
+                        
+                    if caracter == "(" :
+                        # Si se abre parentesis, entonces las operaciones que vengan despues no "se toman en cuenta"
+                        self.pilaParentesis.push(caracter)
+                        print("Se hizo push")
+                    
+                    if caracter == ")" :
+                        # Si se cierra parentesis, entonces esas operaciones si "se toman en cuenta"
+                        self.pilaParentesis.pop()
+                        print("Se hizo pop")
+                    
+                    palabra += caracter # Se va armando la palabra
 
+        
+        if not banderaSalir: # Si no hubo particion entonces esta ahi quedaria
+            nodo = self.nodoArbol(expresion)
+            
+        return nodo  
+                    
 
 class arbolBinario: 
     # Arbol para representar la funcion 
@@ -143,5 +190,8 @@ if __name__ == "__main__":
     arbolPrueba.agregar(3)
     arbolPrueba.agregar(1)
     
-    arbolPrueba.imprimirArbol()
+    # arbolPrueba.imprimirArbol()
     
+    arbolPrueba2 = arbolFuncion()
+    arbolPrueba2.construirArbol("x+2")
+    arbolPrueba2.imprimirArbol()
