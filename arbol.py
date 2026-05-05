@@ -5,11 +5,10 @@ class arbolFuncion:
         self.cabeza = None
         self.listaImprimible = []
         self.listaCaracteres = ["+", "-", "*", "/", "(",")","^"]
-        self.pilaParentesis = stack()
-        self.pilaOperaciones = stack()
+        self.pilaParentesis = stack() # Este stack determina la prioridad de las operaciones
+        self.pilaOperaciones = stack() # Este stack tendrá todas las operaciones. [(,+,-),-]
     
         
-         
     class nodoArbol:
         # Clase para crear objetos tipo Nodo, necesario para crear el arbol
         
@@ -50,60 +49,130 @@ class arbolFuncion:
             self.listaImprimible.append(valorDerecho)
 
     def construirArbol(self, expresion : str):
-        self.cabeza = self.construirArbolRecursivo(self.cabeza, expresion)
+        self.cabeza = self.construirArbolRecursivo(expresion)
         
-    def construirArbolRecursivo(self, nodo : nodoArbol, expresion : str):
+    def construirArbolRecursivo(self, expresion : str):
         # Primero se recorre la expresion para determinar si hay parentesis redundantes
         self.pilaOperaciones.clear()
-        
+        print(f"La expresion es {expresion}")
         for caracter in expresion:
             if caracter in self.listaCaracteres:
                 # Si el caracter esta en la lista de caracteres entonces se apila 
                 self.pilaOperaciones.push(caracter)
         
-        print(self.pilaOperaciones.lista)# Si no esta vacio
-        if self.pilaOperaciones.peek() == ")" : 
-                # Hay que quitar los parentesis redudantes 
-                expresion = expresion[1:len(expresion)-1] 
-
-        for i in range(3):
+        print(self.pilaOperaciones.lista)
+        if self.pilaOperaciones.tamano != 0: # Si hay por lo menos una operacion entonces se hace particion
+            if self.pilaOperaciones.peek() == ")" and expresion[0] == "(": 
+                    # Hay que quitar los parentesis redudantes 
+                    expresion = expresion[1:len(expresion)-1]
+                    
+            #print(expresion)
+            for i in range(3):
             # Casos i = 0 Suma/Resta, i = 1 Multiplicacion/Division, i=2 Exponente
-            self.pilaParentesis.clear()
-            palabra = ""
-            banderaSalir = False 
-             
-            if banderaSalir : # Si ya hice una particion se rompe el ciclo 
-                break
-            for j in range(len(expresion)) :
+                self.pilaParentesis.clear()
+                palabra = ""
+                banderaSalir = False 
                 
-                if i == 0 : # Caso de la suma/resta
+                print(f"iteracion: {i}, expresion: {expresion}")
+                for j in range(len(expresion)) :
+                    # Recoremos la expresion completa
                     caracter = expresion[j] # Caracter actual
-                    # Si es suma o resta y la pila esta vacia entonces se parte desde ahi
-                    if (caracter == "+" or caracter == "-") and self.pilaParentesis.isEmpty():
-                        # Se hace particion
-                        nodo = self.nodoArbol(caracter)
-                        nodo.izquierdo = self.construirArbolRecursivo(nodo.izquierdo, palabra)
-                        nodo.derecho = self.construirArbolRecursivo(nodo.derecho, expresion[j+1:])
-                        banderaSalir = True # Hubo particion 
+                     
+                    if i == 0 : # Caso de la suma/resta
                         
-                    if caracter == "(" :
-                        # Si se abre parentesis, entonces las operaciones que vengan despues no "se toman en cuenta"
-                        self.pilaParentesis.push(caracter)
-                        print("Se hizo push")
-                    
-                    if caracter == ")" :
-                        # Si se cierra parentesis, entonces esas operaciones si "se toman en cuenta"
-                        self.pilaParentesis.pop()
-                        print("Se hizo pop")
-                    
-                    palabra += caracter # Se va armando la palabra
-
-        
-        if not banderaSalir: # Si no hubo particion entonces esta ahi quedaria
-            nodo = self.nodoArbol(expresion)
+                    #Si es suma o resta, la pila esta vacia y no se ha hecho la particion entonces se parte desde ahi
+                        if (caracter == "+" or caracter == "-") and self.pilaParentesis.isEmpty():
+                            # Se hace particion
+                            print(caracter)
+                            
+                            nuevoNodo = self.nodoArbol(caracter)
+                            nuevoNodo.izquierdo = self.construirArbolRecursivo(palabra)
+                            nuevoNodo.derecho = self.construirArbolRecursivo(expresion[j+1:])
+                            banderaSalir = True # Hubo particion 
+                        
+                        if banderaSalir: 
+                            print(f"Se rompe el ciclo interno")
+                            break# Si ya se hizo la particion se rompe el primer ciclo
+                        
+                        if caracter == "(" :
+                            # Si se abre parentesis, entonces las operaciones que vengan despues no "se toman en cuenta"
+                            print("Se pushea el (")
+                            self.pilaParentesis.push(caracter)
+    
+                        
+                        if caracter == ")" :
+                            # Si se cierra parentesis, entonces esas operaciones si "se toman en cuenta"
+                            self.pilaParentesis.pop()
+                            print("Se hizo pop )")
+                        
+                        palabra += caracter # Se va armando la palabra
+                        
+                    if i == 1 : # Caso de la multiplicacion/division
+                        
+                    #Si es multiplicacion o divison, la pila esta vacia y no se ha hecho la particion entonces se parte desde ahi
+                        if (caracter == "*" or caracter == "/") and self.pilaParentesis.isEmpty():
+                            # Se hace particion
+                            print(caracter)
+                            
+                            nuevoNodo = self.nodoArbol(caracter)
+                            nuevoNodo.izquierdo = self.construirArbolRecursivo(palabra)
+                            nuevoNodo.derecho = self.construirArbolRecursivo(expresion[j+1:])
+                            banderaSalir = True # Hubo particion 
+                        
+                        if banderaSalir: 
+                            break   # Si ya se hizo la particion se rompe el primer ciclo
+                        
+                        if caracter == "(" :
+                            # Si se abre parentesis, entonces las operaciones que vengan despues no "se toman en cuenta"
+                            print("Se pushea el (")
+                            self.pilaParentesis.push(caracter)
+    
+                        
+                        if caracter == ")" :
+                            # Si se cierra parentesis, entonces esas operaciones si "se toman en cuenta"
+                            self.pilaParentesis.pop()
+                            print("Se hizo pop )")
+                        
+                        palabra += caracter # Se va armando la palabra
+                
+                    if i == 2 : # Caso del exponente 
+                        
+                    #Si es exponente, la pila esta vacia y no se ha hecho la particion entonces se parte desde ahi
+                        if (caracter == "^") and self.pilaParentesis.isEmpty():
+                            # Se hace particion
+                            print(caracter)
+                            
+                            nuevoNodo = self.nodoArbol(caracter)
+                            nuevoNodo.izquierdo = self.construirArbolRecursivo(palabra)
+                            nuevoNodo.derecho = self.construirArbolRecursivo(expresion[j+1:])
+                            banderaSalir = True # Hubo particion 
+                        
+                        if banderaSalir: 
+                            break   # Si ya se hizo la particion se rompe el primer ciclo
+                        
+                        if caracter == "(" :
+                            # Si se abre parentesis, entonces las operaciones que vengan despues no "se toman en cuenta"
+                            print("Se pushea el (")
+                            self.pilaParentesis.push(caracter)
+    
+                        
+                        if caracter == ")" :
+                            # Si se cierra parentesis, entonces esas operaciones si "se toman en cuenta"
+                            self.pilaParentesis.pop()
+                            print("Se hizo pop )")
+                        
+                        palabra += caracter # Se va armando la palabra
+                
+                
+                if banderaSalir :# Si ya hice una particion se rompe el segundo ciclo
+                    break
+                
+        else:   
+            # Si no hay mas operaciones entonces es una x o un numero
+            nuevoNodo = self.nodoArbol(expresion)
             
-        return nodo  
-                    
+        return nuevoNodo
+                                
 
 class arbolBinario: 
     # Arbol para representar la funcion 
@@ -190,8 +259,8 @@ if __name__ == "__main__":
     arbolPrueba.agregar(3)
     arbolPrueba.agregar(1)
     
-    # arbolPrueba.imprimirArbol()
+    arbolPrueba.imprimirArbol()
     
     arbolPrueba2 = arbolFuncion()
-    arbolPrueba2.construirArbol("x+2")
+    arbolPrueba2.construirArbol("x^2+1")
     arbolPrueba2.imprimirArbol()

@@ -29,6 +29,8 @@ class stack :
 
     def clear(self):
         self.lista = []
+        self.tamano = 0
+        
         
 if __name__ == "__main__":
     # Prueba de la implementacion
