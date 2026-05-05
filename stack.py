@@ -26,8 +26,14 @@ class stack :
     
     def getTamano(self): # Metodo para obtener el tamano actual de la pila
         return self.tamano
+
+    def clear(self):
+        self.lista = []
+        self.tamano = 0
+        
         
 if __name__ == "__main__":
+    # Prueba de la implementacion
     pila = stack()
     
     for i in range(5): 
